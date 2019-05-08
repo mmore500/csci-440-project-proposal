@@ -1,0 +1,160 @@
+\section{Experimental Proposal} \label{sec:experiment}
+
+Experiments will be performed using the genetic regulatory model. This model, motivated by the process by which a eukaryotic cellular genotype is transformed into a cellular phenotype, is standard in the field of computational evolutionary biology. Specifically, the two implementations by \cite{Reisinger2005TowardsEvolvability} and \cite{Wilder2015ReconcilingEvolvability} will be used (experiments will be performed using both models). Fitness will be evaluated as the distance between a end-state chemical species expression profile and a target expression profile.
+
+The relation of two experimental conditions -- developmental variability and fitness criteria variability -- to evolvability will be investigated. The developmental variability experimental condition will be realized through perturbation of the developmental process; in the case of the genetic regulatory model, this may be achieved through arbitrarily fixing the concentration of certain chemical species in the model, altering the initial concentrations of chemical species in the model, or altering the reaction kinetics (i.e. reaction rate) in the model. If time permits, this condition might also be realized by random perturbation directly applied to the genotype or phenotype. 
+
+The developmental variability experimental condition will be realized through systematic adjustment of fitness criteria in concert with small environmental perturbations (i.e. environmental signals). These perturbations will be realized in an identical manner to the previous experimental condition, but smaller in magnitude.
+
+Evolvability will be measured through the canalization of the evolving system, that is the rate at which fitness degrades under a regime of random mutation \cite{Reisinger2007AcquiringRepresentations}. Evolvability will also be assessed through individual evolvability, the mean distance in phenotypic space between the offspring of an individuals, and through the population evolvability, the mean distance in phenotypic space between offspring of generation of individuals \cite{Wilder2015ReconcilingEvolvability}.
+
+The relation of each of these two experimental conditions to evolvability will be assessed independently. If time permits, combinations of these plastic experimental conditions, variants of these plastic experimental conditions, or a third plastic experimental condition modeling local phenotypic search may be tried. Standard static adaptive selection will be used in these experiments. As time permits, other selective mechanisms may be tested, such as
+\begin{itemize}
+  \item fluctuating adaptive selection,
+  \item divergent selection (i.e. novelty search), and
+  \item neutral selection (i.e. genetic drift).
+\end{itemize}
+
+\subsection{Genetic Regulatory Network Model A} \label{sec:simple_grn}
+
+This model is employed in \cite{Wilder2015ReconcilingEvolvability} and was originally developed in \cite{Draghi2009TheModel}. In this model, the genotype is a directed graph with $k$ vertices where $k$ is the number of transcriptional regulators considered in the model. Experiments in \cite{Wilder2015ReconcilingEvolvability} used $k = 10$. Edge weights may only take on the values -1, 1, and 0 (i.e. if no edge exists). Thus, the genome may be represented by a $k \times k$ matrix $W$ where $W_{ij}$ represents the edge weight between transcriptional regulators $i$ and $j$.
+
+An individual's phenotype is the pattern of gene expression induced by the network. Beginning with expression State $S(0) = \vec{1}$, the following update rule is iteratively applied 500 times:
+\begin{align*}
+S_i(t+1) = 
+\begin{cases}
+1 & \text{if } \sum_{j=1}^{k} W_{ji}S_j(t) > 0 \\
+0 & \text{otherwise.}
+\end{cases}
+\end{align*}
+An individual is deemed viable if a fixed point is reached after 500 iterations (i.e. $S(500) = S(501)$). If no fixed point is reached, the individual is deemed inviable and receives a fitness score smaller than those that would be assigned to all possible viable individuals. 
+
+Two fitness regimes are employed by \cite{Wilder2015ReconcilingEvolvability}. In the first, the adaptive selection regime, the hamming distance $d$ between an individual's gene expression profile and a target profile is is used to determine fitness according to the relationship
+\begin{align*}
+F = \frac{1}{(1 + s)^d}
+\end{align*}
+where $s > 0$ is a parameter that tunes the strength of selection. (In the adaptive selection regime, $d$ is taken as $k + 1$ for inviable individuals). The second fitness regime, divergent selection, calculates fitness according to the uniqueness of the individual's gene expression profile in relation to the rest of the profile. This non-objective-based mode of selection is a common trope in the field, as typified by novelty search \cite{LehmanExploitingNovelty}. Under the divergent selection regime, fitness is calculated as
+\begin{align*}
+F = \frac{1}{(1 + s)^{n_i}}
+\end{align*}
+where $n_{i}$ represents the number of individuals in the population that share a particular individual's gene expression profile. Although not explicitly stated in \cite{Wilder2015ReconcilingEvolvability}, it seems that inviable individuals would be assigned fitness $\frac{1}{(1 + s)^{N+1}}$ where $N$ is the size of the evolving population.
+
+\subsection{Genetic Regulatory Network Model B} \label{sec:complex_grn}
+
+This second genetic regulatory network model, employed in \cite{Reisinger2007AcquiringRepresentations}, is a bit more sophisticated. The genome is a set of if-then rules. The if component of these rules are activated by the current state of regulatory transcription factor concentrations. The chemical identity of each regulatory transcription factor is described by a value $v \in [0,1]$. We denote the set of all transcription regulatory factors as $V$. Each gene has one or more associated regulatory factors, each of which has a chemical identity $c \in [-1,1]$. The chemical match between a regulatory region $c$ and a transcription regulatory factor $v$ is computed as
+\begin{align*}
+E(c,v) = \exp{-T \times (|c| - v)^2}.
+\end{align*}
+In this expression, the value $T$ is an evolvable tolerance parameter, which controls how likely meaningful connections are to form between promoter and regulator chemical species. The activation level of each gene is given by a fuzzy matching between the set of regulatory transcription factors and the regulatory regions associated with that gene
+\begin{align*}
+P(G) = \sum_{c\in C} \sum_{v \in V} \operatorname{sign}(c) \times \operatorname{concentration}(v) \times E(c,v)
+\end{align*}
+where the chemical identity of each regulatory region is signified by a value  and $C$ denotes the collection of all regulatory regions associated with a gene. Note that regulatory regions with $c > 0$ act as promoters while regulatory regions with $c < 0$ act as inhibitors. According to this chemical match, the concentrations of the products are updated by the quantity
+\begin{align*}
+\delta \operatorname{concentration}(v) = P(G)/\operatorname{length}(c).
+\end{align*}
+This update cycle is repeated for ten iterations. The concentrations of several certain chemical species, designated specially as environmental transcription factors, at the end of this process is taken as the phenotype of the individual. This GRN encoding, which has a variable number of variable length genes, is recombined during the evolutionary process using the NeuroEvolution of Augmenting Topologes (NEAT) method. Further details, including some parameters used in the model, can be found in \cite{Reisinger2005TowardsEvolvability}.
+
+\subsection{Computational Description}
+
+Computational experiments will employ the open-source package \href{https://github.com/DEAP/deap}{Distributed Evolutionary Algorithms in Python (DEAP)}. This package is well suited to this project: it is actively maintained, \href{http://deap.readthedocs.io/en/master/}{well documented}, and designed to enable ``rapid prototyping and testing of ideas.'' DEAP will provide many components of the evolutionary algorithm right out of the box. Referring to Figure \ref{fig:working_principle}, the components that will be left to me to implement on my part will be ``Decoding,'' ``Evaluation,'' and ``Selection.'' Decoding, synonymous with development, refers to the generation of a phenotype from a genotype. Evaluation refers to scoring the fitness of the phenotype. Selection refers to determining which members of a population will contribute genetic material to the next generation. Evaluation and selection will be extremely straightforward to implement.
+
+The decoding will be the primary programming burden associated with the project. Experimental conditions will primarily be imposed through modifications to this aspect of the evolutionary process. The genetic regulatory model described in Section \ref{sec:simple_grn} will be extremely straightforward to implement, and will be tackled first. The model presented in Section \ref{sec:complex_grn} will be more challenging to implement. This challenge is two pronged: the decoding process is much more complex and the recombination process relies on NEAT, which will be tricky to interface with DEAP (although packages do exist to this end). This model was originally chosen because of the high profile of the paper in which it appeared \cite[p 347]{Downing2015IntelligenceSystems}. However, upon further investigation of the NEAT-DEAP issue, I might opt for another model such as \cite{DwightKuo2006NetworkDivergence} or \cite{Quayle2006ModellingNetworks} which share many characteristics of \cite{Reisinger2005TowardsEvolvability} and were also employed to study evolvability but rely on simpler genetic representation and recombination approaches. A cursory inspection revealed no obvious open source implementations of sophisticated evolving genetic regulatory network models. I would be pleased to make my implementation available upon the conclusion of the project. (This would be a goal of secondary priority, though).
+
+
+
+% \subsection{Direct Plasticity}
+
+%   \begin{enumerate}[label=\alph*)]
+%     \item random changes to the genotype between evaluations
+%     \item random changes to the developmental mapping between genotype and phenotype
+%     \item random changes to the phenotype between evaluations 
+%   \end{enumerate}
+
+% \subsection{Indirect Plasticity}
+
+% indirect plasticity will be selected through fitness function variability: at each evaluation, a random fitness function is applied correlating with an environmental signal during the developmental process; the individual has to develop alternate phenotypes depending on the signal.
+
+% \subsection{Baldwin Effect}
+
+%   \begin{enumerate}[label=\alph*)]
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times)  changes to the genotype between evaluations or
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times) to the phenotype between evaluations 
+%   \end{enumerate}
+
+% This approach, with multiple evaluations used to assess an individual is similar to that used by \cite{Mengistu2016EvolvabilityIt} so is within the realm of computational reason
+
+% \begin{itemize}
+%   \item fitness function variability: at each evaluation, a random fitness function is applied correlating with an environmental signal during the developmental process; the individual has to develop alternate phenotypes depending on the signal.
+%   \item plasticity: a set of evaluations take place with either 
+%   \begin{enumerate}[label=\alph*)]
+%     \item random changes to the genotype between evaluations or
+%     \item random changes to the phenotype between evaluations 
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times)  changes to the genotype between evaluations or
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times) to the phenotype between evaluations 
+%   \end{enumerate}
+% \end{itemize}
+
+% As in \cite{Wilder2015ReconcilingEvolvability}, several types of evolutionary selection will be used. The effects of plasticity will be tested under each of these regimes and each regime will also be used as a control with which to compare the results from experimental trials.
+% \begin{itemize}
+%   \item static adaptive selection
+%   \item fluctuating adaptive selection: random fluctuating selection (target randomly assigned to a new value) and modularly varying goals (MVG) (half of target changed each time, which half changed alternates)
+%   \item divergent selection (i.e. novelty search): individuals selected for phenotypic uniqueness
+%   \item neutral evolution: no selection, just genetic drift
+% \end{itemize}
+
+
+
+
+% \subsection{Genetic Regulatory Network Model}
+
+% The genetic regulatory network model is commonly used in the literature, as in \cite{Wilder2015ReconcilingEvolvability} and \cite{Reisinger2005TowardsEvolvability}, as a toy problem on which to test hypotheses about evolutionary search.
+
+% Additionally, these models have explicit developmental processes that are amenable to intervention to test phenotypic plasticity.
+
+% Plasticity could be especially interesting to compare between the models of \cite{Reisinger2005TowardsEvolvability} and \cite{Wilder2015ReconcilingEvolvability} because \cite{Wilder2015ReconcilingEvolvability} has the possibility of catastrophic failure (i.e. nonconvergence of GRN)
+
+% \subsection{Artificial Neural Network Model}
+%  In evolvability search, individuals are selected for the amount of phenotypic diversity they can produce in their offspring. In novelty search, individuals are selected for their 
+
+% model: genetic regulatory network 
+
+% \cite{Wilder2015ReconcilingEvolvability} evolved towards target phenotype (pattern of gene expression) in adaptive selection
+
+% \cite{Reisinger2005TowardsEvolvability} on bilateral symmetry domain
+
+% types of selection tested by Wilder:
+% \begin{itemize}
+%   \item static adaptive selection
+%   \item fluctuating adaptive selection: random fluctuating selection (target randomly assigned to a new value) and modularly varying goals (MVG) (half of target changed each time, which half changed alternates)
+%   \item divergent selection (i.e. novelty search): individuals selected for phenotypic uniqueness
+%   \item neutral evolution: no selection, just genetic drift
+% \end{itemize}
+
+% phenomena tested by Reisinger:
+
+% proposed experimental conditions (not mutually exclusive):
+% \begin{itemize}
+%   \item environmental variability: different starting conditions for genes (or maybe fixed concentrations?) at each evaluation trial, but same fitness function. This is analogous to Figure \inputandref{elephant_developmental_perturbation}.
+%   \begin{itemize}
+%   	\item ``the base-line GRN has a randomized initial tf state, in order to encourage the GRN function to become robust (i.e. applicable to many environments)'' \cite{Reisinger2005TowardsEvolvability}
+%   \end{itemize}
+%   \item fitness function variability: at each evaluation, a random fitness function is applied correlating with an environmental signal during the developmental process; the individual has to develop alternate phenotypes depending on the signal \inputandref{plant_developmental_perturbation}.
+%   \item plasticity: a set of evaluations take place with either 
+%   \begin{enumerate}[label=\alph*)]
+%     \item random changes to the genotype between evaluations or
+%     \item random changes to the phenotype between evaluations 
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times)  changes to the genotype between evaluations or
+%     \item local search (i.e. $n$ changes made, best performer chosen, another $n$ changes made to that best performer, etc. repeated $m$ times) to the phenotype between evaluations 
+%   \end{enumerate}
+%   and, after fitness scores are collected, the ultimate fitness score is determined either as
+%   \begin{enumerate}[label=\alph*)]
+%     \item an average of the fitness scores
+%     \item the maximum of the fitness scores
+%   \end{enumerate}
+%   Plasticity could be especially interesting to compare between the models of \cite{Reisinger2005TowardsEvolvability} and \cite{Wilder2015ReconcilingEvolvability} because \cite{Wilder2015ReconcilingEvolvability} has the possibility of catastrophic failure (i.e. nonconvergence of GRN)
+% \end{itemize}
+
+% Perhaps these could be hooked up with fluctuating adaptive selection as well?
+
+% The idea of environmental variability and fitness function variability is to force an individual to be able to simultaneously access several distinct phenotypic endpoints through its development process. Perhaps plasticity would have some kind of a smoothing effect on the fitness landscape or lead to the Baldwin Effect. Or perhaps, if the developmental environment is varied but the fitness function remains the same homeostatic mechanisms will be developed to resist fluctuations in the developmental environment. How, if at all, will these effects translate into evolvability at the individual and population levels?

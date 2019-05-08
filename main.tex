@@ -1,0 +1,49 @@
+%\title{Capstone Project }
+
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\input{imports.tex}
+
+ %\indexsetup{level=\paragraph*,toclevel=paragraph}
+\setcounter{table}{0}
+\makeindex[name=mindmap,title=\normalsize{Table {\refstepcounter{table}\arabic{table}\label{table:intext}}: In-text Descriptions of Relationships Between Concepts Related to Evolvability}, columns=3, options= -s index_style.ist]
+
+
+
+\input{macros.tex}
+\setcounter{secnumdepth}{5}
+% \addbibresource{Mendeley.bib}
+
+\title{Capstone Project Proposal}
+\author{Matthew Moreno}
+
+\begin{document}
+
+
+\maketitle
+
+
+\doublespacing
+
+\input{tex/evolutionary_algorithms.tex}
+
+\input{tex/evolvability.tex}
+
+\input{tex/phenotypic_plasticity.tex}
+
+\input{tex/models.tex}
+
+\input{tex/experiment.tex}
+
+\input{tex/schedule.tex}
+
+\input{tex/miscellania.tex}
+
+ \newpage
+ \input{tex/glossary}
+
+ \newpage
+ \bibliography{Mendeley}
+ \bibliographystyle{apalike}
+
+\end{document}

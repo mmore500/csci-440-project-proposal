@@ -1,0 +1,83 @@
+\section{Phenotpyic Plasticity} \label{sec:plasticity}
+\subsection{Definition}
+Plasticity refers to environmental influence on the phenotype. In biology, environmental and genetic influences, together, determine the phenotype. Environmental influences may alter the trajectory of the developmental process or may otherwise induce phenotype changes in response to environmental stimulus \cite{Fusco2010PhenotypicConcepts}. A conceptual distinction, which will be central to this investigation, can be drawn between direct and indirect plasticity. In the first, environmental influence is exerted directly on developmental or physiological processes. In the second, environmental signals prompt responses that are mediated by physiological or developmental systems; that is, cues from the environment are processed more like informational signals than coercive physical influence \cite{Fusco2010PhenotypicConcepts}. Although this distinction might appear nebulous at first blush -- how exactly does a signal differ from coercive influence? -- it has important implications to the design of the proposed experimental regime. At a fundamental level, successful direct plasticity entails \textit{resistance} to environmental influence on the phenotype while successful indirect plasticity entails strategic \textit{amplification} of environmental influence on the phenotype. Figures \inputandref{elephant_developmental_perturbation} and \inputandref{plant_developmental_perturbation} provide a cartoon illustration of this distinction. In Figure \ref{fig:elephant_developmental_perturbation} the cartoon elephant direct phenotypic plasticity, developing high-fitness phenotypic forms (which, in this example, appear nearly indistinguishable to a casual observer but in general need not be identical) despite variable environmental influence (i.e. diet, temperature, humidity, etc.). In Figure \ref{fig:plant_developmental_perturbation} the cartoon plant exhibits indirect plasticity, developing alternate phenotypic forms in response to variable environmental signals (i.e. light and shadow).
+
+\subsection{Symbolic Exposition}
+
+The goal of this section is to bring in some mathematical notation -- albeit, in a fast-and-loose manner -- to provide a more concrete definition of direct and indirect phenotypic plasticity as well as flesh out the immediate implications of direct and indirect phenotypic plasticity on evolution. We will use notation that assumes that a genotype $\vec{g} \in G$, a phenotype $\vec{p} \in P$, and an environment $\vec{e} \in E$ are well-modeled as vector quantities. While this model is not particularly biologically plausible, it comes somewhat closer to meaningful resemblance in the case of artificial evolution and -- in any case -- provides a nice intuition for the argument being made about phenotypic plasticity and evolvability. A concrete example is often useful when thinking through abstract symbolic argumentation. One might picture a microbe swimming in a chemical soup. In this case, $\vec{g} \in G$ would represent the genetic material of the microbe -- its DNA. We might imagine $\vec{e} \in E$ as information describing the chemical composition of the microbe's environment. The microbe's phenotype, $\vec{p} \in P$, could be imagined as the set of protein products expressed by the matured microbe.
+
+Begin by considering the relation between a genotype $\vec{g} = \langle g_1, g_2, \ldots, g_n \rangle \in G$, a developmental process $f$, and a phenotype $\vec{p} = \langle p_1, p_2, \ldots p_n \rangle \in P$,
+\begin{align*}
+\vec{p} = f(\vec{g})
+\end{align*}
+where $g_1, g_2, \ldots, g_n$ each represent a distinct element of the genotype and $p_1, p_2, \ldots p_m$ each represent a distinct element of the phenotype. For a direct-encoded scheme, $m = n$ and the developmental process $f$ is a bijection; each piece of information in the genotype has a one-to-one correspondence to a piece of information (i.e. a characteristic) of the phenotype. (In most direct-encoded schemes, $f$ would typically be the identity transformation). In our microbe example, this would essentially correspond to a search operating directly on expressed protein concentrations.
+
+For an indirect-encoding scheme, $f$ would instead be a many-to-one function; some phenotype $\vec{p}$ can be achieved through several different genotypic configurations $\vec{g}_1, \vec{g}_2, \hdots, \vec{g}_r$ (i.e. $\vec{p} = f(\vec{g}_1) = f(\vec{g}_2) = \hdots = f(\vec{g}_r)$). Further, there would no longer be a one-to-one causal relationship between genotypic elements $g_1, g_2, \ldots, g_n$ and phenotypic $p_1, p_2, \ldots p_m$; we would no longer necessarily have $n = m$ and perturbing a single genotypic element $g_i$ might result in the perturbation of a set of phenotypic elements $\{p_{q_1}, p_{q_2}, \hdots, p_{q_t}\}$.
+
+Adding environmental influence into our model with the term $\vec{e} = \langle e_1, e_2, \ldots, e_k \rangle \in E$, we obtain the relationship
+\begin{align*}
+\vec{p} = f(\vec{g}, \vec{e})
+\end{align*}
+where $e_1, e_2, \ldots, e_z$ represent a set of environmental characteristics. 
+
+In the case of direct plasticity, evolutionary search is pushed towards favoring $\dot{\vec{g}} \in G$ such that $\vec{p}$ is preserved under perturbations to certain characteristics of the environment. Let $\bm{\vec{n}} \in E$ be a random vector with distribution $h_E$ representing environmental variability,
+\begin{align*}
+\vec{p} \approx f(\dot{\vec{g}}, \vec{e})  \approx f(\dot{\vec{g}}, \vec{e} + \bm{\vec{n}}).
+\end{align*}
+Including direct plasticity in our model exerts an evolutionary pressure to make the development of the phenotype resistant to certain perturbations characteristic of the distribution of environmental noise $h_E$. It may be the case that for a certain 
+$\dot{\vec{g}}, \tilde{\vec{g}} \in G$ when $\bm{\vec{n}} = \vec{0}$ we have $f(\dot{\vec{g}}, \vec{e} + \vec{0}) \approx f(\tilde{\vec{g}}, \vec{e} + \vec{0})$ but that when $\bm{\vec{n}} = \vec{n} \neq \vec{0}$ we have $\vec{p} \approx f(\dot{\vec{g}}, \vec{e} + \vec{n}) \neq f(\tilde{\vec{g}}, \vec{e} + \vec{n})$. Returning to our microbe example, direct plasticity might correspond to the phenotypic effects of fluctuating ambient temperature during development. Evolution in this case will select for genetic configurations $\dot{\vec{g}}$ that stabilize the development process $f$ across a environmentally-realized distribution of ambient temperatures $h_E$.
+
+In the case of indirect plasticity, evolutionary search is pushed towards favoring $\hat{\vec{g}} in G$ such that alternate phenotypic forms $\vec{p}_1, \vec{p}_2, \hdots, \vec{p}_s \in P$ are conditionally expressed with the addition of environmental signals $\vec{e}_1, \vec{e}_2, \hdots, \vec{e}_s$. Concretely speaking, environmental cue $\vec{e}_i \in E$ signals that selection will be made for individuals expressing $\vec{p}_i \in P$; the environmental cue provides information about how fitness will be determined (which set of phenotypic characteristics $\vec{p}_i \in P$ will result in high fitness). Thus we have selection for $\hat{\vec{g}} in G$ such that,
+\begin{align*}
+\vec{p}_1 &\approx f(\hat{\vec{g}}, \vec{e} + \vec{e}_1) \\
+\vec{p}_2 &\approx f(\hat{\vec{g}}, \vec{e} + \vec{e}_2) \\
+&\vdotswithin{\approx} \\
+\vec{p}_s &\approx f(\hat{\vec{g}}, \vec{e} + \vec{e}_s).
+\end{align*}
+Including indirect plasticity in our model exerts an evolutionary pressure to tune $\hat{\vec{g}}$ such that the developmental process is highly responsive to certain environmental influences (i.e. $\vec{e}_1, \vec{e}_2, \hdots, \vec{e}_s$). In our microbe example, indirect plasticity might be as simple as the presence of absence of a chemical metabolite in the microbe's environment. In the presence of the metabolite, expression of biochemical hardware to digest the metabolite confers a phenotypic advantage; in its absence, expressing that biochemical hardware is a useless exercise and, ultimately, a burdensome mistake. The presence of the metabolite itself signals which phenotypic form will enjoy high fitness.
+
+Combining the evolutionary pressures exerted by indirect and direct plasticity, we can write that selective pressures will be directed towards a genotype $\dot{\hat{\vec{g}}}$ such that
+\begin{align*}
+\vec{p}_1 &\approx f(\dot{\hat{\vec{g}}}, \vec{e} + \vec{e}_1 + \bm{\vec{n}}) \\
+\vec{p}_2 &\approx f(\dot{\hat{\vec{g}}}, \vec{e} + \vec{e}_2 + \bm{\vec{n}}) \\
+&\vdotswithin{\approx} \\
+\vec{p}_s &\approx f(\dot{\hat{\vec{g}}}, \vec{e} + \vec{e}_s + \bm{\vec{n}}).
+\end{align*}
+Observe that under $\dot{\hat{\vec{g}}}$ the developmental process $f$ is tuned to be highly responsive to certain perturbations (i.e. $\vec{e}_1, \vec{e}_2, \hdots, \vec{e}_s$) but to disregard others (i.e. $\bm{\vec{n}}$). At the roughest level, one might begin to see a connection between phenotypic plasticity and the concepts of robustness and adaptability. 
+
+% In order to more concretely sketch a relationship between phenotypic plasticity and evolvability (albeit, not much more concretely), we need to consider two suppositions and adjust our notation to roughly reflect their implications. 
+
+% In biology, the development process $f$   First, suppose that we can decompose a $\vec{g} \in G$.
+
+% Next, suppose that some similarities exist in the manner (i.e. the pathways) in which genetic and environmental factors are processed by the developmental process $f$. 
+
+% \begin{align*}
+% f_{\vec{g}_d}(\vec{g}, )
+% \end{align*}
+
+
+\subsection{Relation to Evolvability}
+
+The exact role of phenotypic plasticity in evolution is an issue of active debate in the evolutionary biology community \cite{Pigliucci2008IsEvolvable}. However, several hypotheses describing how phenotypic plasticity might relate to evolution and evolvability have been put forward. Phenotypic plasticity might serve as a kind of local exploration of the phenotypic search space, allowing for the immediate expression of a phenotype with increased fitness and biasing the evolutionary search towards high-fitness regions of the search space \cite{Downing2012HeterochronousBaldwinism}. It is also thought that the homeostatic mechanisms that mediate an organism's interactions with its environment might promote robustness \cite{Moczek2011TheInnovation}. Researchers have suggested that phenotypic modularity might promote plasticity, especially in plants \cite{Schlichting1986ThePlants, DeKroon2005APlants}. Thus, selection for plasticity might promote modularity. In these ways, plasticity might promote useful variability.
+
+Conditional expression of phenotypic traits through plasticity allows for relaxed selection on the genotypic locus determining those traits. Thus, significant genetic variation can accumulate at that locus in a population. In a process known as genetic accommodation, the environmental influence on when rarely-expressed phenotypic traits are expressed can be diminished or erased through sensitizing mutation; what once was induced via environmental signal can become constitutive. Such processes have been observed experimentally via artificial selection \cite{Moczek2011TheInnovation}.
+
+It is known that plasticity plays an important role in adaptation to unpredictable or variable environment \cite{Fusco2010PhenotypicConcepts}. Finally, plasticity might play a role in concert with indirect genetic encodings. Indirect encodings are biased towards phenotypic regularity \cite{Clune2011OnRegularity} and plasticity might make available otherwise inaccessible phenotypic forms (i.e. providing a mechanism of irregular refinement of highly regular phenotypic structures generated from indirect encodings).
+
+% \subsection{Previous Work}
+
+% developmental variance: 
+%   \begin{itemize}
+%     \item ``The developmental variance parameter describes the trait's propensity to be mis-expressed during fitness evaluation with multiple evaluations. Each phenotypic trait has a probability of being mutated (flipped) during development with a probability equal to the variance parameter.'' \cite{Reisinger2005TowardsEvolvability}
+%     \item ``Combining developmental variance with multiple evaluations of a single genotype yields an average of the local search space around the solution, biased by the linkage parameters.'' \cite{Reisinger2005TowardsEvolvability}
+%     \item ``Tying linkage directly to fitness is important for rewarding solutions that have learned the 'correct' parameter linkage for the target problem.'' \cite{Reisinger2005TowardsEvolvability}
+%     \item random developmental variance had no effect, but developmental variance following the linkage rule (which we are trying to get to ``match'' the fitness function drift rule) has a significant positive effect on evolvability
+%     \item ``developmental variance plays a large role in determining evolvability, and in particular that this variance must be meaningful with respect to the target fitness function, otherwise there is no evolvability increase.'' \cite{Reisinger2005TowardsEvolvability}
+%     \item this was only tested on the modified direct encoding (each phenotypic trait has a linkage and developmental variance parameter)
+%   \end{itemize}
+
+%   \begin{itemize}
+%   	\item ``the base-line GRN has a randomized initial tf state, in order to encourage the GRN function to become robust (i.e. applicable to many environments)'' \cite{Reisinger2005TowardsEvolvability}
+%   \end{itemize}
+
+% The idea of environmental variability and fitness function variability is to force an individual to be able to simultaneously access several distinct phenotypic endpoints through its development process. Perhaps plasticity would have some kind of a smoothing effect on the fitness landscape or lead to the Baldwin Effect. Or perhaps, if the developmental environment is varied but the fitness function remains the same homeostatic mechanisms will be developed to resist fluctuations in the developmental environment. How, if at all, will these effects translate into evolvability at the individual and population levels?
